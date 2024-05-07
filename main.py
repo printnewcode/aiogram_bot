@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 import logging
 import PyPDF2
 
+from base1 import adding_data
+
 from settings import DEBUG
 
 load_dotenv()
@@ -20,8 +22,11 @@ dp = Dispatcher()  # Активируем диспетчер
 
 @dp.message(Command("start"))
 async def start(message: Message):
-    """ Отправляет приветственное сообщение. """
+    """ Отправляет приветственное сообщение, записывает пользователя в database. """
+    username = message.from_user.username
+    user_id = message.from_user.id
     await message.answer(text="Привет! Отправь мне файл с расширением .docx или .pdf и я достану из него текст.")
+    await adding_data(username, user_id)
 
 
 @dp.message()
@@ -56,7 +61,7 @@ async def document_handling(message: Message) -> None:
             await message.answer("Файл слишком длинный")
         else:
             if DEBUG:
-                await message.answer(f"Упс! Ошибка :{e} ")
+                await message.answer(f"Упс! Ошибка: {e}")
             else:
                 await message.answer("Ошибка!")
 
