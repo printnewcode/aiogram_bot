@@ -9,9 +9,8 @@ from dotenv import load_dotenv
 import logging
 import PyPDF2
 
-from base1 import adding_data
-
-from settings import DEBUG
+from base1 import adding_data, counting
+from settings import DEBUG, ADMIN_LIST
 
 load_dotenv()
 
@@ -21,12 +20,23 @@ dp = Dispatcher()  # Активируем диспетчер
 
 
 @dp.message(Command("start"))
-async def start(message: Message):
+async def start(message: Message) -> None:
     """ Отправляет приветственное сообщение, записывает пользователя в database. """
     username = message.from_user.username
     user_id = message.from_user.id
     await message.answer(text="Привет! Отправь мне файл с расширением .docx или .pdf и я достану из него текст.")
     await adding_data(username, user_id)
+
+
+@dp.message(Command("stats"))
+async def stats(message: Message) -> None:
+    """ Отвечает на команду /stats. Отправляет количество пользователей. """
+    user_id = message.from_user.id
+    if user_id in ADMIN_LIST:
+        answer = await counting()
+        await message.answer(f"Количество пользователей в боте: {str(answer)}")
+    else:
+        await message.answer("Отказано в доступе")
 
 
 @dp.message()
