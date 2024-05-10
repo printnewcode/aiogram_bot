@@ -3,6 +3,7 @@ import os
 from aiogram import Dispatcher, Bot
 from aiogram.filters import Command
 from aiogram.types import Message
+from aiogram.exceptions import TelegramBadRequest
 import asyncio
 from docx import Document
 from dotenv import load_dotenv
@@ -67,7 +68,7 @@ async def document_handling(message: Message) -> None:
             await message.answer("Файл пуст :(")
 
     except Exception as e:
-        if e == "Telegram server says - Bad Request: text is too long":
+        if e == TelegramBadRequest:
             await message.answer("Файл слишком длинный")
         else:
             if DEBUG:
