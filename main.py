@@ -1,6 +1,6 @@
 import os
 
-from aiogram import Dispatcher, Bot
+from aiogram import Bot, Router, Dispatcher
 from aiogram.filters import Command
 from aiogram.types import Message
 from aiogram.exceptions import TelegramBadRequest
@@ -9,39 +9,41 @@ from docx import Document
 from dotenv import load_dotenv
 import logging
 import PyPDF2
+from sqlalchemy.ext.asyncio import create_async_engine
 
-from base1 import adding_data, counting
+from base1 import RelationalDatabase as RelatDb
+# from base1 import adding_data, counting
 from settings import DEBUG, ADMIN_LIST
 
 load_dotenv()
 
+router = Router()
+
 logging.basicConfig(level=logging.INFO)  # Включаем логирование
-bot = Bot(token=os.getenv("TOKEN"))  # Токен для нашего бота
-dp = Dispatcher()  # Активируем диспетчер
 
 
-@dp.message(Command("start"))
-async def start(message: Message) -> None:
+@router.message(Command("start"))
+async def start(message: Message, db: RelatDb, engine) -> None:
     """ Отправляет приветственное сообщение, записывает пользователя в database. """
     username = message.from_user.username
     user_id = message.from_user.id
     await message.answer(text="Привет! Отправь мне файл с расширением .docx или .pdf и я достану из него текст.")
-    await adding_data(username, user_id)
+    await RelatDb(engine).adding_data(username, user_id)
 
 
-@dp.message(Command("stats"))
-async def stats(message: Message) -> None:
+@router.message(Command("stats"))
+async def stats(message: Message, db: RelatDb, engine) -> None:
     """ Отвечает на команду /stats. Отправляет количество пользователей. """
     user_id = message.from_user.id
     if user_id in ADMIN_LIST:
-        answer = await counting()
+        answer = await RelatDb(engine).counting()
         await message.answer(f"Количество пользователей в боте: {str(answer)}")
     else:
         await message.answer("Отказано в доступе")
 
 
-@dp.message()
-async def document_handling(message: Message) -> None:
+@router.message()
+async def document_handling(message: Message, bot: Bot) -> None:
     """
     Достает из файла docx или pdf текст
 
@@ -99,8 +101,17 @@ async def extract_text_from_pdf(doc) -> str:
     return text
 
 
-async def main():
-    await dp.start_polling(bot)
+async def main() -> None:
+    # bot = BotService(os.getenv("TOKEN"))
+    bot = Bot(token=os.getenv("TOKEN"))
+    db = RelatDb
+    dp = Dispatcher(
+        bot=bot,
+        engine=create_async_engine('sqlite+aiosqlite:///base2.db', echo=True),
+        db=db
+    )
+    dp.include_router(router)
+    return await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
