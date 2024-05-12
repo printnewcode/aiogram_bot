@@ -23,7 +23,7 @@ logging.basicConfig(level=logging.INFO)  # Включаем логировани
 
 
 @router.message(Command("start"))
-async def start(message: Message, db: RelatDb, engine) -> None:
+async def start(message: Message, engine) -> None:
     """ Отправляет приветственное сообщение, записывает пользователя в database. """
     username = message.from_user.username
     user_id = message.from_user.id
@@ -32,7 +32,7 @@ async def start(message: Message, db: RelatDb, engine) -> None:
 
 
 @router.message(Command("stats"))
-async def stats(message: Message, db: RelatDb, engine) -> None:
+async def stats(message: Message, engine) -> None:
     """ Отвечает на команду /stats. Отправляет количество пользователей. """
     user_id = message.from_user.id
     if user_id in ADMIN_LIST:
@@ -102,16 +102,14 @@ async def extract_text_from_pdf(doc) -> str:
 
 
 async def main() -> None:
-    # bot = BotService(os.getenv("TOKEN"))
     bot = Bot(token=os.getenv("TOKEN"))
-    db = RelatDb
     dp = Dispatcher(
         bot=bot,
-        engine=create_async_engine('sqlite+aiosqlite:///base2.db', echo=True),
-        db=db
+        engine=create_async_engine('postgresql+asyncpg:///base2.db', echo=True)
+
     )
     dp.include_router(router)
-    return await dp.start_polling(bot)
+    return await dp.start_polling(bot, skip_updates=True)
 
 
 if __name__ == "__main__":

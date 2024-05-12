@@ -2,15 +2,6 @@ import sqlalchemy as sqla
 from sqlalchemy.exc import IntegrityError
 
 
-# engine = create_async_engine('sqlite+aiosqlite:///base2.db', echo=True)  # Создаем engine для sqla
-# metadata = sqla.MetaData()  # Создаем метадату
-
-# Users = sqla.Table('users', metadata,
-#                  sqla.Column('id_user', sqla.Integer, primary_key=True),
-#                 sqla.Column('username', sqla.Text)
-#               )
-
-
 class RelationalDatabase:
     def __init__(self, engine):
         self.engine = engine
