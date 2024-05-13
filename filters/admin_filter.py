@@ -5,11 +5,13 @@ from services.settings import ADMIN_LIST
 
 
 class AdminFilter(Filter):
-    def __init__(self, is_admin):
+    key = "is_admin"
+
+    def __init__(self, is_admin: bool) -> None:
         self.is_admin = is_admin
 
     async def __call__(self, message: types.Message) -> bool:
-        if str(message.from_user.id) in ADMIN_LIST:
+        if (message.from_user.id in ADMIN_LIST) is self.is_admin:
             return True
         else:
             return False

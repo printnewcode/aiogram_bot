@@ -1,10 +1,6 @@
-from aiogram import F, Router
 import PyPDF2
 
-router = Router(name=__name__)
 
-
-@router.message(F.document)
 async def extract_text_from_pdf(doc) -> str:
     """ Перебирает весь документ pdf, достает текст и возвращает его. """
     file = doc

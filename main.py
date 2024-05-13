@@ -28,7 +28,7 @@ async def main() -> None:
 
     )
     dp.include_routers(get_admin_handlers_router(), get_user_handlers_router())
-    return await dp.start_polling(bot, skip_updates=True)
+    await dp.start_polling(bot, skip_updates=True)
 
 
 if __name__ == "__main__":

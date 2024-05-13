@@ -1,8 +1,6 @@
 import sqlalchemy as sqla
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.ext.asyncio import async_sessionmaker
-from sqlalchemy.ext.asyncio import AsyncSession
 
 Base = declarative_base()
 
@@ -17,15 +15,14 @@ class User(Base):
 class RelationalDatabase(User):
     def __init__(self, engine, async_session):
         self.engine = engine
-        self.metadata = sqla.MetaData()
-        self.users_table = User,
+        self.users_table = User
         self.async_session = async_session
 
     async def create_tables(self):
         """ Создает таблицы в Database. """
-        async with self.async_session as session:
-            await session.run_sync(self.metadata.create_all)  # Создаем и добавляем таблицу в database
-            await session.commit()
+        async with self.engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)  # Создаем и добавляем таблицу в database
+            await conn.commit()
 
     async def adding_user(self, username: str, user_id: int) -> None:
         """ Принимает имя и id пользователя; если еще не создан - добавляет его в Database. """

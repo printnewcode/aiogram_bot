@@ -11,4 +11,5 @@ async def start(message: Message, db) -> None:
     username = message.from_user.username
     user_id = message.from_user.id
     await message.answer(text="Привет! Отправь мне файл с расширением .docx или .pdf и я достану из него текст.")
+    await db.create_tables()
     await db.adding_user(username, user_id)
