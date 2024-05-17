@@ -2,12 +2,12 @@ from aiogram import Router
 
 
 def get_user_handlers_router() -> Router:
-    from handlers.user import document_handling, start
+    from handlers.user import parser, start
 
     user_router = Router()
 
     user_router.include_routers(
-        document_handling.router,
+        parser.router,
         start.router
     )
 

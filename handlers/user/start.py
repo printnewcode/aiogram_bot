@@ -1,11 +1,11 @@
 from aiogram import Router
-from aiogram.filters import Command
+from aiogram.filters import CommandStart
 from aiogram.types import Message
 
 router = Router(name=__name__)
 
 
-@router.message(Command("start"))
+@router.message(CommandStart)
 async def start(message: Message, db) -> None:
     """ Отправляет приветственное сообщение, записывает пользователя в database. """
     username = message.from_user.username

@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from handlers.user.__init__ import get_user_handlers_router
 from handlers.admin.__init__ import get_admin_handlers_router
 from services.database import RelationalDatabase as RelatDb
+from services.document_reader import DocumentReader
 
 load_dotenv()
 
@@ -20,11 +21,13 @@ async def main() -> None:
     engine = create_async_engine('postgresql+asyncpg:///base2.db', echo=True)
     async_session = async_sessionmaker(engine, expire_on_commit=False)
     db = RelatDb(engine, async_session)
+    doc_reader = DocumentReader
     dp = Dispatcher(
         bot=bot,
         engine=engine,
         db=db,
-        async_session=async_session
+        async_session=async_session,
+        doc_reader=doc_reader
 
     )
     dp.include_routers(get_admin_handlers_router(), get_user_handlers_router())
