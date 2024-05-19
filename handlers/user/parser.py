@@ -20,16 +20,17 @@ async def document_handling(message: Message, bot: Bot, doc_reader) -> Union[Non
                  и возвращает его пользователю
                 """
     # Достаем file_id из отправленного документа
-    file_id = await doc_reader.get_file_id(message)
-    file = await bot.get_file(file_id)
+    file_id = await doc_reader.get_file_id_to_thread(message)
+    print(file_id)
+    file = await bot.get_file(str(file_id))
     file_path = file.file_path  # Получаем file_path
     doc = await bot.download_file(file_path)  # Скачиваем документ и записываем его в переменную
 
     try:
         if file_path.endswith(".docx"):
-            text = doc_reader.extract_text_from_docx(doc)  # Вызываем функцию для получения текста
+            text = await doc_reader.docx_to_thread(doc)  # Вызываем функцию для получения текста
         elif file_path.endswith(".pdf"):
-            text = doc_reader.extract_text_from_pdf(doc)  # Вызываем функцию для получения текста
+            text = await doc_reader.pdf_to_thread(doc)  # Вызываем функцию для получения текста
         else:
             await message.answer("Извините, я могу работать только с файлами .docx и .pdf.")
             return
