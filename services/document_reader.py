@@ -34,10 +34,10 @@ class DocumentReader:
         return text
 
     async def get_file_id_to_thread(self, message):
-        await asyncio.to_thread(DocumentReader().get_file_id, message)
+        await asyncio.to_thread(DocumentReader.get_file_id, message)
 
     async def docx_to_thread(self, doc):
-        await asyncio.to_thread(DocumentReader().extract_text_from_docx, doc)
+        await asyncio.to_thread(DocumentReader.extract_text_from_docx, doc)
 
     async def pdf_to_thread(self, doc):
-        await asyncio.to_thread(DocumentReader().extract_text_from_pdf, doc)
+        await asyncio.to_thread(DocumentReader.extract_text_from_pdf, doc)
