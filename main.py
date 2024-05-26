@@ -21,7 +21,7 @@ async def main() -> None:
     engine = create_async_engine('postgresql+asyncpg:///base2.db', echo=True)
     async_session = async_sessionmaker(engine, expire_on_commit=False)
     db = RelatDb(engine, async_session)
-    doc_reader = DocumentReader
+    doc_reader = DocumentReader()
     dp = Dispatcher(
         bot=bot,
         engine=engine,
